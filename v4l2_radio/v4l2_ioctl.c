@@ -173,10 +173,11 @@ int  set_freq(int fd, int freq){
 
     vf.tuner=0;
     vf.frequency=freq;
+    vf.type=V4L2_TUNER_RADIO;
 
     ret = ioctl(fd, VIDIOC_S_FREQUENCY, &vf);
     if (ret < 0) {
-        ALOGE("ioctl VIDIOC_S_FREQUENCY\n");
+        ALOGE("ioctl VIDIOC_S_FREQUENCY, %d\n", ret);
         return -1;
     }
 

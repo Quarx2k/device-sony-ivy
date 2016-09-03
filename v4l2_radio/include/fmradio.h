@@ -31,6 +31,8 @@
 
 __BEGIN_DECLS
 
+#include <linux/videodev2.h>
+
 #define FMRADIO_REGISTER_FUNC "register_fmradio_functions"
 
 #define FMRADIO_SIGNATURE 0xDEADBABE
