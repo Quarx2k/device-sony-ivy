@@ -115,13 +115,13 @@ static void open_device()
     INFO("End get V4L tuner\n");
 
     INFO("Start get fact\n");
-    ret = get_fact(fd, &vt);
-    if (ret < 0)
+    float fact = get_fact(fd, &vt);
+    if (fact < 0)
         return -1;
-    INFO("End get fact\n");;
+    INFO("End get fact %.6f\n", fact);;
 
     INFO("Start set freq\n");
-    ret = set_freq(fd, 6250);
+    ret = set_freq(fd, 87500*fact);
     if (ret < 0)
         return -1;
     INFO("End set freq\n");
@@ -131,7 +131,6 @@ static void open_device()
     if (ret < 0)
         return -1;
     INFO("End set DEFAULT_VOLUME\n");
-
 
     INFO("Start set MUTE OFF\n");
     ret = set_mute(fd, 0);
