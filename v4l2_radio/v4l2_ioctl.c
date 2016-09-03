@@ -176,7 +176,7 @@ int  set_freq(int fd, int freq){
 
     ret = ioctl(fd, VIDIOC_S_FREQUENCY, &vf);
     if (ret < 0) {
-        ALOGE("ioctl VIDIOC_S_FREQUENCY");
+        ALOGE("ioctl VIDIOC_S_FREQUENCY\n");
         return -1;
     }
 
@@ -192,7 +192,7 @@ int get_freq(int fd){
 
     ret = ioctl(fd, VIDIOC_G_FREQUENCY, &vf);
     if (ret < 0) {
-        ALOGE("ioctl VIDIOC_G_FREQUENCY");
+        ALOGE("ioctl VIDIOC_G_FREQUENCY\n");
         return -1;
     }
 
