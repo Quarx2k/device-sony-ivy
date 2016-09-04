@@ -58,7 +58,7 @@ static int initMixer() {
         mixer_close(mixer);
         return -ENOTTY;
     }
-    ret = mixer_ctl_set_value(ctl, 0, PCM_FORMAT_S16_LE);
+    ret = mixer_ctl_set_enum_by_string(ctl, "S16_LE");
     if (ret < 0)
         return -1;
 
