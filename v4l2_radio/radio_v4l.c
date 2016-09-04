@@ -95,7 +95,7 @@ static int initMixer() {
         mixer_close(mixer);
         return -ENOTTY;
     }
-    ret = mixer_ctl_set_value(ctl, 0, 100);
+    ret = mixer_ctl_set_value(ctl, 0, 1);
     if (ret < 0)
         return -1;
 
