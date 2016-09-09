@@ -23,3 +23,5 @@ LOCAL_C_INCLUDES := \
 	hardware/libhardware/include
 
 include $(BUILD_EXECUTABLE)
+
+include $(LOCAL_PATH)/broadcom_fm/Android.mk
