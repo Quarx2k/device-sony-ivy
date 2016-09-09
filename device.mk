@@ -59,6 +59,14 @@ PRODUCT_PACKAGES += \
     InCallUI \
     Stk
 
+# Broadcom FM Radio
+PRODUCT_PACKAGES += \
+    radio_v4l \
+    libfmradio.v4l2-fm \
+    libbroadcomfm_jni \
+    broadcom.fmradio \
+    brcm-uim-sysfs 
+
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREBUILT_DPI := xxhdpi xhdpi hdpi
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi

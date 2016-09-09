@@ -59,7 +59,7 @@ ifeq ($(WITH_MALLOC_LEAK_CHECK),true)
         LOCAL_CFLAGS += -DMALLOC_LEAK_CHECK
 endif
 
-LOCAL_MODULE:= libbroadcomfm
+LOCAL_MODULE:= libbroadcomfm_jni
 LOCAL_MODULE_TAGS := optional
 
 include $(BUILD_SHARED_LIBRARY)
