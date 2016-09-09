@@ -66,8 +66,8 @@ static int fd = -1;
 #define SLIM0_RX_VI_FB_LCH_MUX "SLIM0_RX_VI_FB_LCH_MUX"
 #define SLIM0_RX_VI_FB_RCH_MUX "SLIM0_RX_VI_FB_RCH_MUX"
 
-#define DEFAULT_OUTPUT_SAMPLING_RATE 44000
-#define LOW_LATENCY_OUTPUT_PERIOD_SIZE 240
+#define DEFAULT_OUTPUT_SAMPLING_RATE 48000
+#define LOW_LATENCY_OUTPUT_PERIOD_SIZE 256 //audio hal 240
 #define LOW_LATENCY_OUTPUT_PERIOD_COUNT 2
 
 int setMixerBoolCtl(char* name, bool val) {
@@ -237,29 +237,29 @@ static int initMixer() {
     if (ret < 0)
         return -1;
 
+#if 0  
+//we need it!?
+//Open pcm
+     struct pcm *pcm;
+     struct pcm_config config = {  //From audio hal
+        .channels = 2,
+        .rate = DEFAULT_OUTPUT_SAMPLING_RATE,
+        .period_size = LOW_LATENCY_OUTPUT_PERIOD_SIZE,
+        .period_count = LOW_LATENCY_OUTPUT_PERIOD_COUNT,
+        .format = PCM_FORMAT_S16_LE,
+        .start_threshold = LOW_LATENCY_OUTPUT_PERIOD_SIZE / 4,
+        .stop_threshold = INT_MAX,
+        .avail_min = LOW_LATENCY_OUTPUT_PERIOD_SIZE / 4,
+     };
 
-    struct pcm *pcm;
-    struct pcm_config config = {  //From audio hal
-                .channels = 2,
-                .rate = DEFAULT_OUTPUT_SAMPLING_RATE,
-                .period_size = LOW_LATENCY_OUTPUT_PERIOD_SIZE,
-                .period_count = LOW_LATENCY_OUTPUT_PERIOD_COUNT,
-                .format = PCM_FORMAT_S16_LE,
-                .start_threshold = LOW_LATENCY_OUTPUT_PERIOD_SIZE / 4,
-                .stop_threshold = INT_MAX,
-                .avail_min = LOW_LATENCY_OUTPUT_PERIOD_SIZE / 4,
-    };
+     flags |= PCM_MONOTONIC; //From audiohal
 
-    flags |= PCM_MONOTONIC; //From audiohal
-
-/*
-    pcm = pcm_open(0, 1, flags, &config); //From audiohal
-    if (!pcm || !pcm_is_ready(pcm)) {
-          ERR("pcm_open failed: %s\n", pcm_get_error(pcm));
-          return -1;
-    }
-*/
-
+     pcm = pcm_open(0, 1, flags, &config); //From audiohal
+     if (!pcm_is_ready(pcm)) {
+        ERR("pcm_open failed: %s", pcm_get_error(pcm));
+        return -1;
+     }
+#endif
     return 0;
 }
 
@@ -306,7 +306,7 @@ static int open_device()
     INFO("End set freq\n");
 
     INFO("Start set DEFAULT_VOLUME\n");
-    ret = set_volume(fd, 200);
+    ret = set_volume(fd, 255);
     if (ret < 0)
         return -1;
     INFO("End set DEFAULT_VOLUME\n");
@@ -323,7 +323,11 @@ static int open_device()
         return -1;
     INFO("Mixers inited\n");
 
-    sleep(120);
+    while(1) {
+        get_signal_strength(fd, &vt);
+        sleep(5);
+    }
+
     close_dev(fd);
     INFO("Fm device closed\n");
     return 0;
