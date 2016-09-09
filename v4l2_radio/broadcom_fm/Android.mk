@@ -1,5 +1,5 @@
 LOCAL_PATH:= $(call my-dir)
-LOCAL_DIR_PATH:= $(call my-dir)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
@@ -46,18 +46,6 @@ LOCAL_SHARED_LIBRARIES := \
         libhardware_legacy \
         libnativehelper \
         libutils \
-
-ifeq ($(TARGET_SIMULATOR),true)
-ifeq ($(TARGET_OS),linux)
-ifeq ($(TARGET_ARCH),x86)
-LOCAL_LDLIBS += -lpthread -ldl -lrt
-endif
-endif
-endif
-
-ifeq ($(WITH_MALLOC_LEAK_CHECK),true)
-        LOCAL_CFLAGS += -DMALLOC_LEAK_CHECK
-endif
 
 LOCAL_MODULE:= libbroadcomfm_jni
 LOCAL_MODULE_TAGS := optional
