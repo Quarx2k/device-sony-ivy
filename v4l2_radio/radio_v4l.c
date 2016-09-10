@@ -22,7 +22,6 @@
 #include <tinyalsa/asoundlib.h>
 #include "include/fmradio.h"
 #include "include/v4l2_ioctl.h"
-#include <audio_route/audio_route.h>
 
 #define INFO(fmt, ...) fprintf(stderr, "[INFO] " fmt, ##__VA_ARGS__)
 #define ERR(fmt, ...) fprintf(stderr, "[ERR]  " fmt, ##__VA_ARGS__)
