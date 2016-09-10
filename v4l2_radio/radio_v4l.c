@@ -153,13 +153,12 @@ static int initMixer() {
     enum mixer_ctl_type type;
     struct mixer_ctl *ctl;
     struct mixer *mixer = mixer_open(0);
-    unsigned int flags = PCM_OUT;
 
     if (mixer == NULL) {
         ERR("Error opening mixer 0");
         return -1;
     }
-
+#if 0
 //speaker
 //AIF4_VI Mixer SPKR_VI_1
     ret = setMixerBoolCtl(AIF4_VI_Mixer_SPKR_VI_1, true);
@@ -213,8 +212,70 @@ static int initMixer() {
     ret = setMixerEnumNameCtl(SLIM0_RX_VI_FB_RCH_MUX, "SLIM4_TX");
     if (ret < 0)
         return -1;
+#endif
 
-//play-fm
+//headphones-regulation
+/*
+<ctl name="SLIM RX1 MUX" value="AIF1_PB" />
+        <ctl name="SLIM RX2 MUX" value="AIF1_PB" />
+        <ctl name="SLIM_0_RX Channels" value="Two" />
+        <ctl name="RX1 MIX1 INP1" value="RX1" />
+        <ctl name="RX2 MIX1 INP1" value="RX2" />
+        <ctl name="CLASS_H_DSM MUX" value="DSM_HPHL_RX1" />
+        <ctl name="HPHL DAC Switch" value="1" />
+        <ctl name="COMP1 Switch" value="1" />
+        <!--100 % of 20 register: 0x1AE-->
+        <ctl name="HPHL Volume" value="20" />
+        <!--100 % of 20 register: 0x1B4-->
+        <ctl name="HPHR Volume" value="20" />
+        <!--60 % of 124 (rounded) register: 0x2B7-->
+        <ctl name="RX1 Digital Volume" value="76" />
+        <!--60 % of 124 (rounded) register: 0x2BF-->
+        <ctl name="RX2 Digital Volume" value="76" />
+*/
+#if 1
+  ret = setMixerEnumNameCtl("SLIM RX1 MUX", "AIF1_PB");
+    if (ret < 0)
+        return -1;
+  ret = setMixerEnumNameCtl("SLIM RX2 MUX", "AIF1_PB");
+    if (ret < 0)
+        return -1;
+  ret = setMixerEnumNameCtl("SLIM_0_RX Channels", "Two");
+    if (ret < 0)
+        return -1;
+  ret = setMixerEnumNameCtl("RX1 MIX1 INP1", "RX1");
+    if (ret < 0)
+        return -1;
+  ret = setMixerEnumNameCtl("RX2 MIX1 INP1", "RX2");
+    if (ret < 0)
+        return -1;
+  ret = setMixerEnumNameCtl("CLASS_H_DSM MUX", "DSM_HPHL_RX1");
+    if (ret < 0)
+        return -1;
+  ret = setMixerBoolCtl("HPHL DAC Switch", true);
+    if (ret < 0)
+        return -1;
+  ret = setMixerBoolCtl("COMP0 Switch", true);
+    if (ret < 0)
+        return -1;
+  ret = setMixerIntCtl("HPHL Volume", 20);
+    if (ret < 0)
+        return -1;
+  ret = setMixerIntCtl("HPHR Volume", 20);
+    if (ret < 0)
+        return -1;
+  ret = setMixerIntCtl("RX1 Digital Volume", 76);
+    if (ret < 0)
+        return -1;
+  ret = setMixerIntCtl("RX2 Digital Volume", 76);
+    if (ret < 0)
+        return -1;
+#endif
+   ret = setMixerBoolCtl("SLIMBUS_0_RX Audio Mixer MultiMedia4", true);
+    if (ret < 0)
+        return -1;
+ //play-fm
+#if 1
 //SLIM_0_RX_Format
     ret = setMixerEnumNameCtl(SLIM_0_RX_Format, "S16_LE");
     if (ret < 0)
@@ -223,10 +284,7 @@ static int initMixer() {
     ret = setMixerEnumNameCtl(SLIM_0_RX_SampleRate, "KHZ_48");
     if (ret < 0)
         return -1;
-//PRI_MI2S_LOOPBACK_Volume
-    ret = setMixerIntCtl(PRI_MI2S_LOOPBACK_Volume, 1);
-    if (ret < 0)
-        return -1;
+#endif
 //SLIMBUS_0_RX_Port_Mixer_PRI_MI2S_TX
     ret = setMixerBoolCtl(SLIMBUS_0_RX_Port_Mixer_PRI_MI2S_TX, true);
     if (ret < 0)
@@ -235,36 +293,64 @@ static int initMixer() {
     ret = setMixerBoolCtl(SLIMBUS_DL_HL_Switch, true);
     if (ret < 0)
         return -1;
+//MultiMedia1 Mixer PRI_MI2S_TX
+    ret = setMixerBoolCtl("MultiMedia1 Mixer PRI_MI2S_TX", true);
+    if (ret < 0)
+        return -1;
+//MultiMedia1 Mixer PRI_MI2S_TX
+    ret = setMixerBoolCtl("MultiMedia2 Mixer PRI_MI2S_TX", true);
+    if (ret < 0)
+        return -1;
+//PRI_MI2S_LOOPBACK_Volume
+    ret = setMixerIntCtl("PRI MI2S LOOPBACK Volume", 421);
+    if (ret < 0)
+        return -1;
 
-#if 0  
-//we need it!?
 //Open pcm
-     struct pcm *pcm;
-     struct pcm_config config = {  //From audio hal
+     struct pcm *pcm_out;
+     struct pcm *pcm_in;
+     struct pcm_config pcm_config_fm = {
         .channels = 2,
-        .rate = DEFAULT_OUTPUT_SAMPLING_RATE,
-        .period_size = LOW_LATENCY_OUTPUT_PERIOD_SIZE,
-        .period_count = LOW_LATENCY_OUTPUT_PERIOD_COUNT,
+        .rate = 48000,
+        .period_size = 256,
+        .period_count = 4,
         .format = PCM_FORMAT_S16_LE,
-        .start_threshold = LOW_LATENCY_OUTPUT_PERIOD_SIZE / 4,
+        .start_threshold = 0,
         .stop_threshold = INT_MAX,
-        .avail_min = LOW_LATENCY_OUTPUT_PERIOD_SIZE / 4,
+        .avail_min = 0,
      };
 
-     flags |= PCM_MONOTONIC; //From audiohal
-
-     pcm = pcm_open(0, 1, flags, &config); //From audiohal
-     if (!pcm_is_ready(pcm)) {
-        ERR("pcm_open failed: %s", pcm_get_error(pcm));
+     pcm_out = pcm_open(0, 1, PCM_OUT, &pcm_config_fm);
+     if (pcm_out && !pcm_is_ready(pcm_out)) {
+        ERR("pcm_out_open failed: %s", pcm_get_error(pcm_out));
         return -1;
      }
-#endif
-    return 0;
+
+     pcm_in = pcm_open(0, 1, PCM_IN, &pcm_config_fm);
+     if (pcm_in && !pcm_is_ready(pcm_in)) {
+        ERR("pcm_in_open failed: %s", pcm_get_error(pcm_in));
+        return -1;
+     }
+
+     ret = pcm_start(pcm_out);
+     if (ret < 0) {
+         return -1;
+         ERR("pcm_out start fail, %d\n", ret);
+     }
+
+     ret = pcm_start(pcm_in);
+     if (ret < 0) {
+         return -1;
+         ERR("pcm_int start fail, %d\n", ret);
+     }
+
+     return 0;
 }
 
 static int open_device()
 {
     int ret = 0;
+
     INFO("Try open Fm device\n");
     fd = open_dev(DEFAULT_DEVICE);
     if (fd < 0) 
@@ -315,13 +401,13 @@ static int open_device()
     if (ret < 0)
         return -1;
     INFO("End set MUTE_OFF\n");
-
+#if 1
     INFO("Init mixers\n");
     ret = initMixer();
     if (ret < 0)
         return -1;
     INFO("Mixers inited\n");
-
+#endif
     while(1) {
         get_signal_strength(fd, &vt);
         sleep(5);
