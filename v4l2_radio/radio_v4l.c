@@ -271,7 +271,7 @@ static int initMixer() {
     if (ret < 0)
         return -1;
 #endif
-   ret = setMixerBoolCtl("SLIMBUS_0_RX Audio Mixer MultiMedia4", true);
+    ret = setMixerBoolCtl("SLIMBUS_0_RX Audio Mixer MultiMedia4", true);
     if (ret < 0)
         return -1;
  //play-fm
@@ -320,13 +320,13 @@ static int initMixer() {
         .avail_min = 0,
      };
 
-     pcm_out = pcm_open(0, 1, PCM_OUT, &pcm_config_fm);
+     pcm_out = pcm_open(0, 5, PCM_OUT, &pcm_config_fm);
      if (pcm_out && !pcm_is_ready(pcm_out)) {
         ERR("pcm_out_open failed: %s", pcm_get_error(pcm_out));
         return -1;
      }
 
-     pcm_in = pcm_open(0, 1, PCM_IN, &pcm_config_fm);
+     pcm_in = pcm_open(0, 6, PCM_IN, &pcm_config_fm);
      if (pcm_in && !pcm_is_ready(pcm_in)) {
         ERR("pcm_in_open failed: %s", pcm_get_error(pcm_in));
         return -1;
@@ -334,14 +334,14 @@ static int initMixer() {
 
      ret = pcm_start(pcm_out);
      if (ret < 0) {
-         return -1;
          ERR("pcm_out start fail, %d\n", ret);
+         return -1;
      }
 
      ret = pcm_start(pcm_in);
      if (ret < 0) {
-         return -1;
          ERR("pcm_int start fail, %d\n", ret);
+         return -1;
      }
 
      return 0;
