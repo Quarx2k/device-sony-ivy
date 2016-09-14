@@ -63,8 +63,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     radio_v4l \
     libfmradio.v4l2-fm \
-    libbroadcomfm_jni \
-    broadcom.fmradio \
+    libfmjni \
+    FMRadioB \
     brcm-uim-sysfs 
 
 PRODUCT_AAPT_CONFIG := normal
